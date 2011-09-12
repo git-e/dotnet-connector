@@ -1,0 +1,17 @@
+#pragma once
+
+namespace dotnet_connector {
+struct object;
+
+template<typename tTag>
+struct handle;
+
+template<typename tTag>
+struct gchandle;
+
+template<typename tTag>
+struct relay;
+
+template<typename tTag, typename tDerivedTag>
+struct forwarder;
+} /* namespace dotnet_connector */

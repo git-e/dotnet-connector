@@ -1,0 +1,103 @@
+#pragma once
+#include <dnc/forward>
+#include <dnc/misc>
+#include <dnc/toolbox/type_transform>
+
+namespace dotnet_connector {
+#pragma managed(push, off)
+
+class invalid
+{
+private:
+	invalid();
+	invalid(invalid const &);
+	invalid &
+	operator=(invalid const &);
+	invalid *
+	operator&();
+};
+
+template<typename tag, typename type_class>
+struct type_classifier_extension :
+	identity<type_class>
+{};
+
+template<typename tag>
+struct type_classifier_lvalue_ref :
+	type_classifier_extension<tag, TypeClass::LValueRef<tag>>
+{};
+
+template<typename tag>
+struct type_classifier_rvalue_ref :
+	type_classifier_extension<tag, TypeClass::RValueRef<tag>>
+{};
+
+template<typename tag>
+struct type_classifier_pointer :
+	identity<invalid>
+{};
+
+template<typename tag>
+struct type_classifier_pointer<tag *> :
+	type_classifier_extension<tag, TypeClass::Pointer<tag>>
+{};
+
+template<typename tag, int link>
+struct type_classifier :
+	type_classifier_extension<tag, TypeClass::Undefined>
+{};
+
+template<typename tag>
+struct type_class :
+	chained<type_classifier, tag>
+{};
+
+template<typename tag>
+struct type_classifier<tag, 0> :
+	chained_use_else_continue<std::is_fundamental<tag>::value,
+		type_classifier_extension<tag, TypeClass::Fundamental>>
+{};
+
+template<typename tag>
+struct type_classifier<tag, 1> :
+	chained_use_else_continue<std::is_enum<tag>::value,
+		type_classifier_extension<tag, TypeClass::Enum>>
+{};
+
+#ifdef __cplusplus_cli
+template<typename tag>
+struct type_classifier<tag, 2> :
+	chained_use_else_continue<__is_class(tag) || __is_ref_class(tag) || __is_value_class(tag),
+		type_classifier_extension<tag, TypeClass::Class>>
+{};
+#else
+template<typename tag>
+struct type_classifier<tag, 2> :
+	chained_use_else_continue<std::is_class<tag>::value,
+		type_classifier_extension<tag, TypeClass::Class>>
+{};
+#endif
+
+template<typename tag>
+struct type_classifier<tag, 3> :
+	chained_use_else_continue<std::is_pointer<tag>::value,
+		type_classifier_pointer<typename remove_cv<tag>::type>>
+{};
+
+template<typename tag>
+struct type_classifier<tag &, 4> :
+	type_classifier_lvalue_ref<tag>
+{};
+
+template<typename tag>
+struct type_classifier<tag &&, 4> :
+	type_classifier_rvalue_ref<tag>
+{};
+
+template<typename tag>
+struct type_classifier<tag, 4> :
+	chained_continue
+{};
+
+#pragma managed(pop)
+} /* namespace dotnet_connector*/

@@ -1,0 +1,7 @@
+#pragma once
+
+#ifdef __cplusplus_cli
+#define cli_public public
+#else /* def __cplusplus_cli */
+#define cli_public
+#endif /* ! def __cplusplus_cli */

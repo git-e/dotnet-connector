@@ -1,0 +1,121 @@
+#pragma once
+#include <utility>
+#include <type_traits>
+
+namespace dotnet_connector {
+#ifdef __cplusplus_cli
+#pragma managed(push, on)
+#endif /* def __cplusplus_cli */
+
+using std::is_same;
+using std::is_const;
+using std::is_volatile;
+using std::is_base_of;
+using std::is_reference;
+using std::is_lvalue_reference;
+using std::is_rvalue_reference;
+using std::enable_if;
+using std::conditional;
+using std::integral_constant;
+using std::true_type;
+using std::false_type;
+
+struct empty_t {};
+
+template<typename _T>
+struct identity {
+	typedef _T
+	type;
+};
+
+namespace sfinae {
+template<typename test>
+struct simple_test
+{
+private:
+	template<class _Tc>
+	static decltype(test::check<_Tc>()) _check(int);
+	template<class>
+	static false_type _check(...);
+
+public:
+	template<typename parameter>
+	struct check :
+		integral_constant<bool, identity<decltype( _check<parameter>(0) )>::type::value>
+	{};
+};
+
+namespace test {
+struct has_type {
+	template<class _Tc>
+	static true_type check(typename _Tc::type * = nullptr);
+};
+} /* test */
+} /* sfinae */
+
+template<class _Tc>
+struct has_type :
+	sfinae::simple_test<sfinae::test::has_type>::check<_Tc>
+{};
+
+template<bool condition, typename _T>
+struct use_if :
+	conditional<condition, _T, empty_t>
+{};
+
+struct chained_continue {};
+
+template<typename node>
+struct chained_check_is_not_continue :
+	integral_constant<bool, ! is_base_of<chained_continue, node>::value>
+{};
+
+template<
+	template<typename parameter, int position> class node,
+	typename node_parameter,
+	template<typename node> class eoc_check = chained_check_is_not_continue,
+	int position = 0,
+	bool = eoc_check<node<node_parameter, position>>::value>
+struct chained :
+	node<node_parameter, position>
+{};
+
+template<
+	template<typename parameter, int position> class node,
+	typename node_parameter,
+	template<typename node> class eoc_check,
+	int position>
+struct chained<node, node_parameter, eoc_check, position, false> :
+	node<node_parameter, position>,
+	chained<node, node_parameter, eoc_check, position + 1>
+{};
+
+template<bool _continue>
+struct chained_continue_if :
+	use_if<_continue, chained_continue>::type
+{};
+
+template<bool, typename node_base = empty_t>
+struct chained_break_if
+{};
+
+template<typename node_base>
+struct chained_break_if<false, node_base> :
+	chained_continue,
+	node_base
+{};
+
+template<bool, typename node_base = empty_t>
+struct chained_use_else_continue :
+	node_base
+{};
+
+template<typename node_base>
+struct chained_use_else_continue<false, node_base> :
+	chained_continue
+{};
+
+#ifdef __cplusplus_cli
+#pragma managed(pop)
+#endif /* def __cplusplus_cli */
+} /* namespace dotnet_connector*/

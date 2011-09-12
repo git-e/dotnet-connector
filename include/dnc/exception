@@ -1,0 +1,132 @@
+#pragma once
+#include <dnc/object>
+#include <dnc/gchandle>
+#include <memory>
+
+namespace dotnet_connector {
+
+struct exception;
+
+template<>
+struct traits<exception> {
+#ifdef __cplusplus_cli
+	typedef System::Exception
+	type;
+#endif
+
+	typedef object
+	base_tag;
+
+	typedef traits<object>
+	base_traits;
+};
+
+#ifdef __cplusplus_cli
+public
+struct native_exception_ptr {
+	native_exception_ptr(std::exception_ptr const & eptr) :
+		m_exception_ptr(eptr)
+	{}
+
+	operator std::exception_ptr &() {
+		return m_exception_ptr;
+	}
+
+	operator std::exception_ptr const &() const {
+		return m_exception_ptr;
+	}
+
+	operator std::exception_ptr volatile &() volatile {
+		return m_exception_ptr;
+	}
+
+	operator std::exception_ptr const volatile &() const volatile {
+		return m_exception_ptr;
+	}
+
+private:
+	std::exception_ptr
+	m_exception_ptr;
+};
+#ifdef dotnet_connector_BUILD
+public
+ref struct NativeException : System::Exception {
+	NativeException(native_exception_ptr const & eptr, System::String ^ message);
+	~NativeException();
+
+	property native_exception_ptr
+	Pointer {
+		native_exception_ptr get();
+	}
+
+private:
+	native_exception_ptr *
+	m_exception;
+};
+#endif /* def dotnet_connector_BUILD */
+#endif /* def __cplusplus_cli */
+
+struct managed_exception : std::exception {
+	dotnet_connector_export
+	managed_exception(gchandle<::dotnet_connector::exception> * exception);
+	
+	dotnet_connector_export
+	virtual
+	~managed_exception();
+
+	dotnet_connector_export
+	virtual
+	char const *
+	what() const throw();
+
+	gchandle<::dotnet_connector::exception> *
+	managed() const {
+		return m_exception;
+	}
+
+	dotnet_connector_export
+	void
+	throw_managed() const;
+
+private:
+	gchandle<::dotnet_connector::exception> *
+	m_exception;
+
+	std::shared_ptr<char const>
+	m_what;
+
+	static
+	void
+	m_what_deleter(char const *);
+};
+
+template<>
+struct marshal<exception> {
+	static dotnet_connector_export
+	void
+	from_native(std::exception_ptr const & eptr);
+
+#ifdef __cplusplus_cli
+	static
+	void
+	from_managed(System::Exception ^ e)
+	{
+		NativeException ^
+		ne(dynamic_cast<NativeException ^>(e));
+		if ( ne )
+			std::rethrow_exception(ne->Pointer);
+		else
+			throw managed_exception(gchandle<exception>::allocate(e));
+	}
+#endif /* def __cplusplus_cli */
+};
+
+template<>
+struct relay<exception>
+{
+	static dotnet_connector_export
+	void
+	throw_managed(std::exception_ptr const & eptr, char const * what);
+};
+
+} /* namespace dotnet_connector */

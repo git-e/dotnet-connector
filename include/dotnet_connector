@@ -1,0 +1,11 @@
+#pragma once
+#ifdef __cplusplus_cli
+#using <dotnet_connector.dll>
+#endif /* def __cplusplus_cli */
+
+#include <dnc/fundamental>
+#include <dnc/enum>
+#include <dnc/class>
+#include <dnc/exception>
+#include <dnc/tag>
+#include <dnc/build>

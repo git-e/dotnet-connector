@@ -1,0 +1,197 @@
+#pragma once
+#include <dnc/forward>
+#include <dnc/class_fwd>
+#include <dnc/toolbox/cli_public>
+#include <dnc/toolbox/type_transform>
+
+namespace dotnet_connector {
+
+template<typename tType, typename tTag, typename tBaseTag>
+struct class_traits
+{
+	typedef tType
+	type;
+
+#ifdef __cplusplus_cli
+	typedef typename remove_cv<tType>::type ^
+	managed;
+#else
+	typedef tType
+	native;
+#endif /* def __cplusplus_cli */
+
+	typedef tBaseTag
+	base_tag;
+
+	typedef handle<tTag>
+	handle;
+
+	typedef gchandle<tTag>
+	gchandle;
+
+	typedef traits<base_tag>
+	base_traits;
+
+	typedef relay<tTag>
+	relay;
+
+	template<typename tDerivedTag>
+	struct forwarder :
+		base_traits::forwarder<tDerivedTag>
+	{};
+};
+
+template<typename tTag>
+struct traits<tTag const, TypeClass::Class>
+{
+	typedef typename traits<tTag>::type const
+	type;
+
+#ifdef __cplusplus_cli
+	typedef typename traits<tTag>::managed
+	managed;
+#else
+	typedef typename traits<tTag>::native const
+	native;
+#endif /* def __cplusplus_cli */
+
+	typedef typename traits<tTag>::base_tag const
+	base_tag;
+
+	typedef handle<tTag const>
+	handle;
+
+	typedef gchandle<tTag>
+	gchandle;
+
+	typedef traits<base_tag>
+	base_traits;
+
+	typedef typename traits<tTag>::relay
+	relay;
+
+	template<typename tDerivedTag>
+	struct forwarder :
+		identity<typename traits<tTag>::forwarder<tDerivedTag>::type const>
+	{};
+};
+
+template<typename tTag>
+struct traits<tTag volatile, TypeClass::Class>
+{
+	typedef typename traits<tTag>::type volatile
+	type;
+
+#ifdef __cplusplus_cli
+	typedef typename traits<tTag>::managed
+	managed;
+#else
+	typedef typename traits<tTag>::native volatile
+	native;
+#endif /* def __cplusplus_cli */
+
+	typedef typename traits<tTag>::base_tag volatile
+	base_tag;
+
+	typedef handle<tTag volatile>
+	handle;
+
+	typedef gchandle<tTag>
+	gchandle;
+
+	typedef traits<base_tag>
+	base_traits;
+
+	typedef typename traits<tTag>::relay
+	relay;
+
+	template<typename tDerivedTag>
+	struct forwarder :
+		identity<typename traits<tTag>::forwarder<tDerivedTag>::type volatile>
+	{};
+};
+
+template<typename tTag>
+struct traits<tTag const volatile, TypeClass::Class>
+{
+	typedef typename traits<tTag>::type const volatile
+	type;
+
+#ifdef __cplusplus_cli
+	typedef typename traits<tTag>::managed
+	managed;
+#else
+	typedef typename traits<tTag>::native const volatile
+	native;
+#endif /* def __cplusplus_cli */
+
+	typedef typename traits<tTag>::base_tag const volatile
+	base_tag;
+
+	typedef handle<tTag const volatile>
+	handle;
+
+	typedef gchandle<tTag>
+	gchandle;
+
+	typedef traits<base_tag>
+	base_traits;
+
+	typedef typename traits<tTag>::relay
+	relay;
+
+	template<typename tDerivedTag>
+	struct forwarder :
+		identity<typename traits<tTag>::forwarder<tDerivedTag>::type const volatile>
+	{};
+};
+
+template<typename type>
+struct tag_for;
+
+template<typename type>
+struct tag_for<type const> :
+	identity<typename tag_for<type>::type const>
+{};
+
+template<typename type>
+struct tag_for<type volatile> :
+	identity<typename tag_for<type>::type volatile>
+{};
+
+template<typename type>
+struct tag_for<type const volatile> :
+	identity<typename tag_for<type>::type const volatile>
+{};
+
+template<typename tRefType, typename tType>
+struct traits<tRefType, TypeClass::LValueRef<tType, TypeClass::Class>>
+{
+#ifdef __cplusplus_cli
+	typedef typename traits<tType>::managed
+	managed;
+#else
+	typedef tRefType
+	native;
+#endif /* def __cplusplus_cli */
+};
+
+template<typename tRefType, typename tType>
+struct traits<tRefType, TypeClass::RValueRef<tType, TypeClass::Class>>
+{
+#ifdef __cplusplus_cli
+	typedef typename traits<tType>::managed
+	managed;
+#else
+	typedef tRefType
+	native;
+#endif /* def __cplusplus_cli */
+};
+
+} /* namespace dotnet_connector */
+
+#include <dnc/object>
+#include <dnc/handle>
+#include <dnc/gchandle>
+#include <dnc/forwarder>
+#include <dnc/marshal>

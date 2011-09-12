@@ -1,0 +1,61 @@
+#include <dnc/forward>
+#include <dnc/misc>
+
+namespace dotnet_connector {
+
+template<typename tType>
+struct traits<tType, TypeClass::Fundamental>
+{
+	typedef tType
+	managed;
+
+	typedef tType
+	native;
+};
+
+template<typename tPointerType, typename tType>
+struct traits<tPointerType, TypeClass::Pointer<tType, TypeClass::Fundamental>>
+{
+	typedef typename traits<tType>::managed *
+	managed;
+
+	typedef typename traits<tType>::native *
+	native;
+};
+
+template<typename type>
+struct marshal<type, TypeClass::Fundamental> {
+	typedef type
+	handle;
+
+	static
+	type
+	to_managed(handle x) {
+		return x;
+	}
+
+	static
+	handle
+	from_managed(type x) {
+		return x;
+	}
+
+	static
+	type
+	to_native(handle x) {
+		return x;
+	}
+
+	static
+	handle
+	from_native(type x) {
+		return x;
+	}
+};
+
+template<typename tPointerType, typename tType>
+struct marshal<tPointerType, TypeClass::Pointer<tType, TypeClass::Fundamental>> :
+	marshal<tPointerType, TypeClass::Fundamental>
+{};
+
+} /* namespace dotnet_connector */

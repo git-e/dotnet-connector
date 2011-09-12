@@ -1,0 +1,34 @@
+#pragma once
+#include <dnc/forward>
+#include <dnc/handle>
+
+namespace dotnet_connector {
+
+template<class tag>
+struct relay :
+	relay<typename base<tag>::type>
+{
+	static
+	void
+	destroy(handle<tag> & handle)
+#ifndef __cplusplus_cli
+	{
+		auto
+		that = handle.that();
+		handle.reset();
+		delete that;
+	}
+#endif /* ! def __cplusplus_cli */
+	;
+};
+
+template<>
+struct relay<object> {};
+template<>
+struct relay<object const> {};
+template<>
+struct relay<object volatile> {};
+template<>
+struct relay<object volatile const> {};
+
+} /* namespace dotnet_connector */

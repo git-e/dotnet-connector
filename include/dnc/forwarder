@@ -1,0 +1,122 @@
+#pragma once
+#include <dnc/class_fwd>
+#include <dnc/object>
+
+namespace dotnet_connector {
+
+#pragma managed(push, off)
+struct forwarder_base {
+	void
+	free_handle() {
+		gchandle<object>::free(m_handle);
+	};
+	
+	void
+	change_handle_type(gchandle<object>::handle_type type) {
+		gchandle<object>::change_type(m_handle, type);
+	};
+
+	virtual
+	~forwarder_base() {
+		free_handle();
+	}
+	
+	gchandle<object> *
+	handle() {
+		return m_handle;
+	}
+
+protected:
+	forwarder_base(gchandle<object> * handle) :
+		m_handle(handle)
+	{}
+
+	gchandle<object> *
+	m_handle;
+};
+#pragma managed(pop)
+
+#ifndef __cplusplus_cli
+template<class tag, class tag_derived>
+struct forwarder;
+
+template<class tag_derived>
+struct forwarder<object, tag_derived> :
+	::dotnet_connector::traits<tag_derived>::type,
+	forwarder_base
+{
+	explicit inline
+	forwarder(gchandle<tag_derived> * handle) :
+		typename ::dotnet_connector::traits<tag_derived>::type(),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1)),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t, typename arg2_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1, arg2_t && arg2) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1), std::forward<arg2_t>(arg2)),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t, typename arg2_t, typename arg3_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1, arg2_t && arg2, arg3_t && arg3) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1), std::forward<arg2_t>(arg2), std::forward<arg3_t>(arg3)),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t, typename arg2_t, typename arg3_t, typename arg4_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1, arg2_t && arg2, arg3_t && arg3, arg4_t && arg4) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1), std::forward<arg2_t>(arg2), std::forward<arg3_t>(arg3), std::forward<arg4_t>(arg4)),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t, typename arg2_t, typename arg3_t, typename arg4_t, typename arg5_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1, arg2_t && arg2, arg3_t && arg3, arg4_t && arg4, arg5_t && arg5) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1), std::forward<arg2_t>(arg2), std::forward<arg3_t>(arg3), std::forward<arg4_t>(arg4), std::forward<arg5_t>(arg5)),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t, typename arg2_t, typename arg3_t, typename arg4_t, typename arg5_t, typename arg6_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1, arg2_t && arg2, arg3_t && arg3, arg4_t && arg4, arg5_t && arg5, arg6_t && arg6) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1), std::forward<arg2_t>(arg2), std::forward<arg3_t>(arg3), std::forward<arg4_t>(arg4), std::forward<arg5_t>(arg5), std::forward<arg6_t>(arg6)),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t, typename arg2_t, typename arg3_t, typename arg4_t, typename arg5_t, typename arg6_t, typename arg7_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1, arg2_t && arg2, arg3_t && arg3, arg4_t && arg4, arg5_t && arg5, arg6_t && arg6, arg7_t && arg7) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1), std::forward<arg2_t>(arg2), std::forward<arg3_t>(arg3), std::forward<arg4_t>(arg4), std::forward<arg5_t>(arg5), std::forward<arg6_t>(arg6), std::forward<arg7_t>(arg7)),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t, typename arg2_t, typename arg3_t, typename arg4_t, typename arg5_t, typename arg6_t, typename arg7_t, typename arg8_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1, arg2_t && arg2, arg3_t && arg3, arg4_t && arg4, arg5_t && arg5, arg6_t && arg6, arg7_t && arg7, arg8_t && arg8) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1), std::forward<arg2_t>(arg2), std::forward<arg3_t>(arg3), std::forward<arg4_t>(arg4), std::forward<arg5_t>(arg5), std::forward<arg6_t>(arg6), std::forward<arg7_t>(arg7), std::forward<arg8_t>(arg8)),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t, typename arg2_t, typename arg3_t, typename arg4_t, typename arg5_t, typename arg6_t, typename arg7_t, typename arg8_t, typename arg9_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1, arg2_t && arg2, arg3_t && arg3, arg4_t && arg4, arg5_t && arg5, arg6_t && arg6, arg7_t && arg7, arg8_t && arg8, arg9_t && arg9) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1), std::forward<arg2_t>(arg2), std::forward<arg3_t>(arg3), std::forward<arg4_t>(arg4), std::forward<arg5_t>(arg5), std::forward<arg6_t>(arg6), std::forward<arg7_t>(arg7), std::forward<arg8_t>(arg8), std::forward<arg9_t>(arg9)),
+		forwarder_base(handle)
+	{}
+	template<typename arg1_t, typename arg2_t, typename arg3_t, typename arg4_t, typename arg5_t, typename arg6_t, typename arg7_t, typename arg8_t, typename arg9_t, typename arg10_t>
+	inline
+	forwarder(gchandle<tag_derived> * handle, arg1_t && arg1, arg2_t && arg2, arg3_t && arg3, arg4_t && arg4, arg5_t && arg5, arg6_t && arg6, arg7_t && arg7, arg8_t && arg8, arg9_t && arg9, arg10_t && arg10) :
+		typename ::dotnet_connector::traits<tag_derived>::type(std::forward<arg1_t>(arg1), std::forward<arg2_t>(arg2), std::forward<arg3_t>(arg3), std::forward<arg4_t>(arg4), std::forward<arg5_t>(arg5), std::forward<arg6_t>(arg6), std::forward<arg7_t>(arg7), std::forward<arg8_t>(arg8), std::forward<arg9_t>(arg9), std::forward<arg10_t>(arg10)),
+		forwarder_base(handle)
+	{}
+
+protected:
+	gchandle<tag_derived> *
+	handle() const {
+		return static_cast<gchandle<tag_derived> *>(::dotnet_connector::forwarder_base::m_handle);
+	}
+};
+#endif /* ! def __cplusplus_cli */
+
+} /* namespace dotnet_connector */

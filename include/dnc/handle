@@ -1,0 +1,42 @@
+#pragma once
+#include <dnc/class>
+
+namespace dotnet_connector {
+
+template<typename class_tag>
+cli_public
+struct handle :
+	traits<class_tag>::base_traits::handle
+{
+	typedef ::dotnet_connector::traits<class_tag>
+	traits;
+
+	typedef typename traits::base_traits::handle
+	base_handle;
+
+	typedef typename traits::type
+	type;
+
+#ifdef __cplusplus_cli
+	explicit handle(typename traits::managed x) :
+		base_handle(x)
+	{}
+
+#else
+	explicit handle(type * ptr) :
+		base_handle(ptr)
+	{}
+
+	type *
+	pointer() const {
+		return static_cast<type *>(base_handle::pointer());
+	}
+
+	type *
+	operator->() const {
+		return static_cast<type *>(base_handle::pointer());
+	}
+#endif
+};
+
+} /* namespace dnc */

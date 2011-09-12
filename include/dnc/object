@@ -1,0 +1,376 @@
+#pragma once
+#include <dnc/build>
+#include <dnc/forward>
+#include <dnc/class_fwd>
+#include <dnc/tag>
+#include <dnc/toolbox/cli_public>
+#include <cstdint>
+
+namespace dotnet_connector {
+
+struct object;
+struct native_handle;
+
+#ifdef __cplusplus_cli
+struct native_handle;
+#ifdef dotnet_connector_BUILD
+ref struct NativeObject;
+#endif /* def dotnet_connector_BUILD */
+#endif /* def __cplusplus_cli */
+
+template<>
+struct traits<object, TypeClass::Class>
+{
+#ifdef __cplusplus_cli
+	typedef ::dotnet_connector::NativeObject
+	type;
+#endif
+	
+	typedef handle<object>
+	handle;
+
+	typedef gchandle<object>
+	gchandle;
+
+	template<typename tDerivedTag>
+	struct forwarder :
+		identity<::dotnet_connector::forwarder<object, tDerivedTag>>
+	{};
+};
+
+template<>
+struct traits<object const, TypeClass::Class>
+{
+#ifdef __cplusplus_cli
+	typedef NativeObject
+	type;
+#endif
+
+	typedef handle<object const>
+	handle;
+
+	typedef gchandle<object>
+	gchandle;
+
+	template<typename tDerivedTag>
+	struct forwarder :
+		identity<::dotnet_connector::forwarder<object, tDerivedTag> const>
+	{};
+};
+
+template<>
+struct traits<object volatile, TypeClass::Class>
+{
+#ifdef __cplusplus_cli
+	typedef NativeObject
+	type;
+#endif
+
+	typedef handle<object volatile>
+	handle;
+
+	typedef gchandle<object>
+	gchandle;
+
+	template<typename tDerivedTag>
+	struct forwarder :
+		identity<::dotnet_connector::forwarder<object, tDerivedTag volatile>>
+	{};
+};
+
+template<>
+struct traits<object const volatile, TypeClass::Class>
+{
+#ifdef __cplusplus_cli
+	typedef NativeObject
+	type;
+#endif
+
+	typedef handle<object const volatile>
+	handle;
+
+	typedef gchandle<object>
+	gchandle;
+
+	template<typename tDerivedTag>
+	struct forwarder :
+		identity<::dotnet_connector::forwarder<object, tDerivedTag const volatile>>
+	{};
+};
+
+#ifdef __cplusplus_cli
+#ifdef dotnet_connector_BUILD
+public ref struct NativeObject {
+	property void *
+	Pointer {
+		void * get();
+	}
+
+	property void const *
+	ConstPointer {
+		void const * get();
+	}
+
+	property void volatile *
+	VolatilePointer {
+		void volatile * get();
+	}
+
+	property void const volatile *
+	CVPointer {
+		void const volatile * get();
+	}
+
+	property bool
+	Const {
+		bool get();
+	}
+
+	property bool
+	Volatile {
+		bool get();
+	}
+
+	property bool
+	DeleteOnDispose {
+		bool get();
+	}
+
+	property bool
+	IsManaged {
+		bool get();
+	}
+
+	void
+	Disconnect();
+
+	void
+	Claim();
+
+	void
+	Release();
+
+	virtual
+	~NativeObject();
+
+protected:
+	NativeObject(native_handle x, bool dod, bool managed);
+
+private:
+	void *
+	m_ptr;
+
+	char
+	m_state;
+
+	literal char
+	c_delete_on_dispose = 1;
+
+	literal char
+	c_const = 2;
+
+	literal char
+	c_volatile = 4;
+
+	literal char
+	c_managed = 8;
+};
+#endif /* def dotnet_connector_BUILD */
+#endif /* def __cplusplus_cli */
+
+template<>
+struct handle<object> {
+	void *
+	pointer() const {
+		return m_ptr;
+	}
+
+protected:
+#ifdef __cplusplus_cli
+	handle(NativeObject ^ x) :
+		m_ptr(x->Pointer)
+	{};
+	friend ref struct NativeObject;
+#else
+
+	handle(void * ptr) :
+		m_ptr(ptr)
+	{};
+#endif
+
+private:
+	void *
+	m_ptr;
+};
+
+template<>
+struct handle<object const> {
+	void const *
+	pointer() const {
+		return m_ptr;
+	}
+
+protected:
+#ifdef __cplusplus_cli
+	handle(NativeObject ^ x) :
+		m_ptr(x->ConstPointer)
+	{};
+#else
+
+	handle(void const * ptr) :
+		m_ptr(ptr)
+	{};
+#endif
+
+private:
+	void const *
+	m_ptr;
+};
+
+template<>
+struct handle<object volatile> {
+	void volatile *
+	pointer() const {
+		return m_ptr;
+	}
+
+protected:
+#ifdef __cplusplus_cli
+	handle(NativeObject ^ x) :
+		m_ptr(x->VolatilePointer)
+	{};
+#else
+
+	handle(void volatile * ptr) :
+		m_ptr(ptr)
+	{};
+#endif
+
+private:
+	void volatile *
+	m_ptr;
+};
+
+template<>
+struct handle<object const volatile> {
+	void const volatile *
+	pointer() const {
+		return m_ptr;
+	}
+
+protected:
+#ifdef __cplusplus_cli
+	handle(NativeObject ^ x) :
+		m_ptr(x->CVPointer)
+	{};
+#else
+
+	handle(void const volatile * ptr) :
+		m_ptr(ptr)
+	{};
+#endif
+
+private:
+	void const volatile *
+	m_ptr;
+};
+
+template<>
+class gchandle<object>
+{
+#ifdef __cplusplus_cli
+	typedef ::System::Object
+	Object;
+
+	typedef ::System::IntPtr
+	IntPtr;
+
+	typedef ::System::Runtime::InteropServices::GCHandle
+	GCHandle;
+
+	typedef ::System::Runtime::InteropServices::GCHandleType
+	GCHandleType;
+#endif /* __cplusplus_cli */
+
+public:
+	enum handle_type {
+		Weak,
+		WeakTrackResurrection,
+		Normal,
+		Pinned
+	};
+
+	__dotnet_connector_DEBUGGER_STEP_THROUGH
+	__dotnet_connector_SECURITY_SAFE_CRITICAL
+	static dotnet_connector_export
+	void
+	free(gchandle * & x);
+
+	static dotnet_connector_export
+	gchandle *
+	clone(gchandle * x);
+
+	static dotnet_connector_export
+	void
+	change_type(gchandle * & _handle, handle_type _type);
+
+#ifdef __cplusplus_cli
+	static
+	gchandle *
+	allocate(Object ^ object) {
+		return static_cast<gchandle *>(static_cast<IntPtr>(GCHandle::Alloc(object)).ToPointer());
+	}
+
+	[System::Security::SecuritySafeCritical]
+	Object ^
+	that() const {
+		return static_cast<GCHandle>(IntPtr(const_cast<gchandle *>(this))).Target;
+	}
+#endif /* __cplusplus_cli */
+
+private:
+	gchandle();
+
+	gchandle(gchandle const &x);
+
+	void
+	operator=(gchandle const &);
+
+	void * operator& ();
+};
+
+#ifdef __cplusplus_cli
+public
+struct native_handle {
+	native_handle(handle<object> x) :
+		m_const(false),
+		m_volatile(false),
+		m_ptr(const_cast<void *>(x.pointer()))
+	{}
+
+	native_handle(handle<object const> x) :
+		m_const(true),
+		m_volatile(false),
+		m_ptr(const_cast<void *>(x.pointer()))
+	{}
+
+	native_handle(handle<object volatile> x) :
+		m_const(false),
+		m_volatile(true),
+		m_ptr(const_cast<void *>(x.pointer()))
+	{}
+
+	native_handle(handle<object const volatile> x) :
+		m_const(true),
+		m_volatile(true),
+		m_ptr(const_cast<void *>(x.pointer()))
+	{}
+
+	bool m_const : 1;
+	bool m_volatile : 1;
+	void *
+	m_ptr;
+};
+#endif /* __cplusplus_cli */
+
+} /* namespace dotnet_connector */

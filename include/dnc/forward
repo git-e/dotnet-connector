@@ -1,0 +1,26 @@
+#pragma once
+
+namespace dotnet_connector {
+namespace TypeClass {
+	struct Undefined;
+	struct Fundamental;
+	struct Enum;
+	struct Class;
+	template<typename type, typename = typename type_class<type>::type>
+	struct Pointer;
+	template<typename type, typename = typename type_class<type>::type>
+	struct LValueRef;
+	template<typename type, typename = typename type_class<type>::type>
+	struct RValueRef;
+} /* type_tag */
+
+template<typename type>
+struct type_class;
+
+template<typename type, typename = typename type_class<type>::type>
+struct traits;
+
+template<typename type, typename = typename type_class<type>::type>
+struct marshal;
+
+} /* namespace dotnet_connector*/

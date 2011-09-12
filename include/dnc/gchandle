@@ -1,0 +1,54 @@
+#pragma once
+#include <dnc/build>
+#include <dnc/class>
+#include <dnc/tag>
+#include <cstddef> 
+
+namespace dotnet_connector {
+
+template<typename type_tag>
+struct gchandle :
+	traits<type_tag>::base_traits::gchandle
+{
+	typedef typename traits<type_tag>::base_traits::gchandle
+	base_handle;
+
+	static
+	void
+	free(gchandle * & x) {
+		return base_handle::free(x);
+	}
+
+	static
+	void
+	clone(gchandle * x) {
+		return static_cast<gchandle *>(base_handle::clone(x));
+	}
+
+#ifdef __cplusplus_cli
+	typedef typename traits<type_tag>::type
+	type;
+
+	static
+	gchandle *
+	allocate(type ^ that) {
+		return static_cast<gchandle *>(base_handle::allocate(that));
+	}
+
+	typename type ^
+	that() const {
+		return static_cast<type ^>(
+			base_handle::that());
+	}
+#endif /* def __cplusplus_cli */
+
+private:
+	gchandle();
+
+	gchandle(gchandle const &x);
+
+	void
+	operator=(gchandle const &);
+};
+
+} /* namespace dotnet_connector */

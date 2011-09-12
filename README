@@ -1,0 +1,6 @@
+dotnet-connector - a small library assisting create c++/.net wrappers
+
+dotnet-connector is a collection of c++ template classes and a few helper
+classes aiding in the creation of native to managed wrappers. it provides
+facilities to customize marshaling based per type, single inheritance,
+forwarding exception and passing calls to virtual functions in both directions.

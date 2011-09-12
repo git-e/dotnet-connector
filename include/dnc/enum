@@ -1,0 +1,49 @@
+#include <dnc/forward>
+#include <dnc/misc>
+
+namespace dotnet_connector {
+
+template<typename tTag>
+struct marshal<tTag, TypeClass::Enum>
+{
+	typedef traits<tTag>
+	traits;
+
+	typedef typename traits::handle
+	handle;
+
+#ifdef __cplusplus_cli
+	typedef typename traits::managed
+	managed;
+
+	static
+	managed
+	to_managed(handle x) {
+		return static_cast<managed>(x);
+	}
+
+	static
+	handle
+	from_managed(managed x) {
+		return static_cast<handle>(x);
+	}
+#else
+
+	typedef typename traits::native
+	native;
+
+	static
+	native
+	to_native(handle x) {
+		return static_cast<native>(x);
+	}
+
+	static
+	handle
+	from_native(native x) {
+		return static_cast<handle>(x);
+	}
+#endif
+};
+
+} /* namespace dotnet_connector */

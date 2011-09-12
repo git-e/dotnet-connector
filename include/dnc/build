@@ -1,0 +1,15 @@
+#pragma once
+
+#ifdef dotnet_connector_BUILD
+#define dotnet_connector_export __declspec(dllexport)
+#else
+#define dotnet_connector_export __declspec(dllexport)
+#endif
+
+#ifdef __cplusplus_cli
+#define __dotnet_connector_DEBUGGER_STEP_THROUGH [System::Diagnostics::DebuggerStepThroughAttribute]
+#define __dotnet_connector_SECURITY_SAFE_CRITICAL [System::Security::SecuritySafeCritical]
+#else
+#define __dotnet_connector_DEBUGGER_STEP_THROUGH
+#define __dotnet_connector_SECURITY_SAFE_CRITICAL
+#endif

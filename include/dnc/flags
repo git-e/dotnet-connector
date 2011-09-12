@@ -1,0 +1,127 @@
+#pragma once
+
+#ifdef __cplusplus_cli
+#ifdef dotnet_connector_BUILD
+
+	static
+	flag const Forwarder = flag::Forwarder;
+
+	static
+	flag const Owning = flag::Owning;
+	
+	Flags(flag e) :
+		_value(static_cast<integral_type>(e))
+	{}
+	static
+	operator Flags(flag e) {
+		return Flags(e);
+	}
+	
+	static
+	Flags
+	operator|(Flags x, Flags y) {
+		return Flags(x._value | y._value);
+	}
+
+	static
+	Flags
+	operator&(Flags x, Flags y) {
+		return Flags(x._value & y._value);
+	}
+
+	static
+	Flags
+	operator^(Flags x, Flags y) {
+		return Flags(x._value ^ y._value);
+	}
+
+	static
+	Flags
+	operator+(Flags x, Flags y) {
+		return Flags(x._value | y._value);
+	}
+
+	static
+	Flags
+	operator-(Flags x, Flags y) {
+		return Flags(x._value & ~y._value);
+	}
+
+	Flags %
+	operator|=(Flags x) {
+		_value |= x._value;
+		return *this;
+	}
+
+	Flags %
+	operator&=(Flags x) {
+		_value &= x._value;
+		return *this;
+	}
+
+	Flags %
+	operator^=(Flags x) {
+		_value ^= x._value;
+		return *this;
+	}
+
+	Flags %
+	operator+=(Flags x) {
+		_value |= x._value;
+		return *this;
+	}
+
+	Flags %
+	operator-=(Flags x) {
+		_value &= ~x._value;
+		return *this;
+	}
+
+	static
+	bool
+	operator==(Flags x, Flags y) {
+		return x._value == y._value;
+	}
+
+	static
+	bool
+	operator!=(Flags x, Flags y) {
+		return x._value != y._value;
+	}
+
+	void
+	set(flag e) {
+		_value |= static_cast<integral_type>(e);
+	}
+
+	void
+	unset(flag e) {
+		_value &= ~static_cast<integral_type>(e);
+	}
+
+	void
+	toggle(flag e) {
+		_value ^= static_cast<integral_type>(e);
+	}
+
+	bool
+	check(flag e) {
+		return _value & static_cast<integral_type>(e);
+	}
+
+protected:
+	Flags(integral_type value) :
+		_value(value)
+	{}
+	static
+	operator Flags(integral_type value) {
+		return Flags(value);
+	}
+
+	integral_type
+	_value;
+};
+
+} /* namespace dotnet_connector */
+#endif /* def dotnet_connector_BUILD */
+#endif /* def __cplusplus_cli */

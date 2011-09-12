@@ -1,0 +1,154 @@
+#pragma once
+#include <dnc/class_fwd>
+#include <dnc/forwarder>
+#include <dnc/toolbox/type_transform>
+
+namespace dotnet_connector {
+
+template <typename tTag>
+struct marshal<tTag, TypeClass::Class> {
+	typedef traits<tTag>
+	traits;
+
+	typedef typename traits::handle
+	handle;
+
+	typedef typename traits::type
+	type;
+
+#ifdef __cplusplus_cli
+	typedef typename traits::managed
+	managed;
+
+	static
+	handle
+	from_managed(managed x) {
+		return handle(x);
+	}
+
+	static
+	managed
+	to_managed(handle x) {
+		return gcnew remove_const<type>::type(x, true, false);
+	}
+#else
+
+	typedef typename traits::native
+	native;
+
+	static
+	handle
+	from_native(type & x) {
+		return handle(new native(std::move(x)));
+	}
+
+	static
+	handle
+	from_native(type && x) {
+		return handle(new native(std::move(x)));
+	}
+
+	static
+	type &
+	to_native(handle x) {
+		return *x.pointer();
+	}
+#endif
+};
+
+template <typename tRefTag, typename tTag>
+struct marshal<tRefTag, TypeClass::LValueRef<tTag, TypeClass::Class>>
+{
+	typedef traits<tTag>
+	traits;
+
+	typedef typename traits::handle
+	handle;
+
+	typedef typename traits::type
+	type;
+
+#ifdef __cplusplus_cli
+	typedef typename traits::managed
+	managed;
+
+	static
+	handle
+	from_managed(managed x) {
+		return handle(x);
+	}
+
+	static
+	managed
+	to_managed(handle x) {
+		gchandle<object> *
+		managed_x = traits::relay::managed(x);
+		if ( ! managed_x )
+			return gcnew type(x, false, false);
+		return static_cast<managed>(managed_x->that());
+	}
+#else
+
+	static
+	handle
+	from_native(type & x) {
+		return handle(&x);
+	}
+
+	static
+	type &
+	to_native(handle x) {
+		return *x.pointer();
+	}
+#endif
+};
+
+template <typename tRefTag, typename tTag>
+struct marshal<tRefTag, TypeClass::LValueRef<tTag const, TypeClass::Class>>
+{
+	typedef traits<tTag const>
+	traits;
+
+	typedef typename traits::handle
+	handle;
+
+	typedef typename traits::type
+	type;
+
+#ifdef __cplusplus_cli
+	typedef typename traits::managed
+	managed;
+
+	static
+	handle
+	from_managed(managed x) {
+		return handle(x);
+	}
+
+	static
+	managed
+	to_managed(handle x) {
+		return gcnew typename ::dotnet_connector::traits<tTag>::type(x, false, false);
+	}
+#else
+
+	static
+	handle
+	from_native(type & x) {
+		return handle(&x);
+	}
+
+	static
+	type &
+	to_native(handle x) {
+		return *x.pointer();
+	}
+#endif
+};
+
+template <typename tRefTag, typename tTag>
+struct marshal<tRefTag, TypeClass::RValueRef<tTag, TypeClass::Class>> :
+	marshal<tTag>
+{};
+
+} /* namespace dotnet_connector */
